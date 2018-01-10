@@ -4,27 +4,18 @@ import {Badge, Button} from 'react-native-elements';
 
 import {Contacts, Permissions} from 'expo';
 
-import DrawPage from './drawpage';
-import ContactsPage from './contactpage';
-import SantasAddressBook from './santaBook';
-
 export default class HomePage extends React.Component {
 
   static navigationOptions = {
-    title: 'Secret Santa'
+    //title: 'Secret Santa' //sets the title and back arrow with the appropriate text
   }
 
-  state = {
-           selectedContacts: []
-          }
+  state = { 
+    selectedContacts: [],
+  }
 
-  // do i need this still if i load them in a another part?
   componentDidMount() {
-    /*
-    fetch('http://192.168.0.22:3001/users')
-      .then(res => res.json())
-      .then(users => this.setState({ users }));
-    */
+
   }
 
   onSelect = selectedContacts => {

@@ -27,7 +27,6 @@ const RoutingStack = StackNavigator({
 		screen: ExclusionsPage
 	},
 	DrawPage : {
-		screen: DrawPage,
-		title: 'Here'
+		screen: DrawPage
 	}
 });

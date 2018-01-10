@@ -1,114 +1,169 @@
 import React from 'react';
-import {Image, Item, List, StyleSheet, Text, View } from 'react-native';
-import {Button} from 'react-native-elements';
-import MultiSelect from 'react-native-multiple-select';
-import { NavigationActions } from 'react-navigation';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, List, ListItem, SearchBar} from 'react-native-elements';
+import MaterialInitials from 'react-native-material-initials/native';
 
+import CheckBox from 'react-native-checkbox-heaven';
+	
 import getAddressBook from './santaBook';
 
-export default class ContactsPage extends React.Component {
+export default class ProperContactsPage extends React.Component {
+	static navigationOptions = {
+    title: 'Contacts'
+  }
 
-	state = { 
-						contacts : [],
-						selectedContacts : []
-					}
+	state = {
+		contacts : [],
+		availableContacts: [],
+		selectedContacts: []
+	}
 
 	async componentDidMount() {
 		this.setState({
-			contacts : await getAddressBook(),
-			selectedContacts : this.props.navigation.state.params.selectedContacts.map(sc => sc.id)
+			contacts: await getAddressBook(),
+			availableContacts: await getAddressBook(),
+			selectedContacts : this.props.navigation.state.params.selectedContacts
 		});
 	}
 
-  onSelectedItemsChange = selectedContacts => {
-    this.setState({ selectedContacts: selectedContacts });
-  };
+	onChangeText = searchWords => {
+		word = searchWords.toLowerCase();
 
-  filterSelected = (contacts, selectedContacts) => {
-  	return contacts.filter(contact => selectedContacts.includes(contact.id));
-  };
+		availableContacts = this.state.contacts.filter(
+			contact => contact.name.toLowerCase().includes(word)
+		);
 
-	render () {
-		if (this.state.contacts.length === 0) {
-			return <View><Text>Loading...</Text></View>;
+		this.setState({availableContacts: availableContacts});
+	}
+
+	onClearText = word => {
+		console.log("Clear", word);
+	}
+
+	getInitialIcon = name => {
+		return (
+			<MaterialInitials
+			  style={{alignSelf: 'center'}}
+			  backgroundColor={'black'}
+			  color={'white'}
+			  size={30}
+			  // this is not quite proper 
+			  text={name.replace(/\W/g, ' ')}
+			  single={false}
+			/>
+		);
+	}
+
+	isSelected = (contact) => {
+		return this.state.selectedContacts.includes(contact);
+	}
+
+	onPressContact = (contact) => {		
+		if(!this.isSelected(contact)) {
+			this.setState({selectedContacts: [...this.state.selectedContacts, contact]});
+
+		} else {
+  		index = this.state.selectedContacts.indexOf(contact);
+			copy = this.state.selectedContacts.slice();
+		  copy.splice(index, 1);
+			this.setState({selectedContacts: copy});
+
+		}
+		
+	}
+
+	getCheckedIcon = (contact) => {
+		return (
+			<CheckBox
+		    onChange={(val) => {
+		    	if(val) {
+						this.setState({selectedContacts: [...this.state.selectedContacts, contact]});
+		    	} else {
+		    		index = this.state.selectedContacts.indexOf(contact);
+		    		copy = this.state.selectedContacts.slice();
+		    		copy.splice(index, 1);
+						this.setState({selectedContacts: copy});
+		    	}
+		    }} 
+		    checked={this.state.selectedContacts.includes(contact)}	
+			/>
+		);
+	}
+
+	render() {
+		if(this.state.contacts.length === 0) {
+			return(
+				<View><Text> Loading... </Text></View>
+			);
 		}
 
 		return (
-		<View style={styles.container}>
+			<View style={styles.container}>
 
-			<View style={styles.multiselect}>
+				<View style={styles.searchView}> 
+					<SearchBar
+						round
+					  lightTheme
+					  onChangeText={this.onChangeText}
+					  onClearText={this.onClearText}
+					  placeholder='Search...' />
+				</View>
 
-				<MultiSelect
-	          
-	          items={this.state.contacts}
-	          uniqueKey="id"
-	          ref={(component) => { this.multiSelect = component }}
-	          onSelectedItemsChange={this.onSelectedItemsChange}
-	          selectedItems={this.state.selectedContacts}
-	          selectText="Select contacts"
-	          searchInputPlaceholderText="Search..."
-	          onChangeInput={ (text)=> console.log(text)}
-	          //altFontFamily="ProximaNova-Light"
-	          tagRemoveIconColor="#CCC"
-	          tagBorderColor="#CCC"
-	          tagTextColor="#CCC"
-	          selectedItemTextColor="#CCC"
-	          selectedItemIconColor="#CCC"
-	          itemTextColor="#000"
-	          displayKey="name"
-	          searchInputStyle={{ color: '#CCC' }}
-	          submitButtonColor="#CCC"
-	          submitButtonText="Done"
-	        />
+				<ScrollView style={styles.listView}>
+					<List style={styles.list} containerStyle={{marginTop: 0}}>
+						{
+							// list too big, makes it slow
+							this.state.availableContacts.map((l, i) => (
+								<ListItem
+									key={i}
+									title={'  ' + l.name}
+									//hideChevron
+									leftIcon={this.getInitialIcon(l.name)}
+									rightIcon={this.getCheckedIcon(l)}
+									onPress={() => this.onPressContact(l)}
+								/>
+							))
+						}
+					</List>
+				</ScrollView>
 
-			 </View>
-
-
-			 <View>
-
-          <Button 
-            large
-            containerViewStyle={{width: '100%', marginLeft: 0}}
-            onPress={() => {
+				<View style={styles.buttonView}>
+					<Button
+					  // large
+						onPress={() => {
             			this.props.navigation.goBack();
-            			this.props.navigation.state.params.onSelect(
-            					this.filterSelected(this.state.contacts, this.state.selectedContacts));
+            			this.props.navigation.state.params.onSelect(this.state.selectedContacts);
             		}
             	} 
-            title="Add"
-          />
-        </View>
-    </View>
-	);
+						containerViewStyle={{width: '100%', marginLeft: 0}}
+						title='Save changes'
+					/>
+				</View>
+			</View>
+		);
+	}
 }
-}
-
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1, 
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
+	container: {
+		flex: 1,
+	},
 
-  pictureAndButton: {
-    flex: 1, 
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
+	listView: {
+		flex: 1,
+		backgroundColor: 'pink'
+	},
 
-  multiselect: {
-  	height: '50%'
-  },
+	list: {
+		flex: 1,
+		backgroundColor: 'red'
+	},
 
-  elfImage: {
-  	height: '20%'
-  },
+	buttonView: {
+		backgroundColor: 'skyblue'
+	},
 
+	searchView: {
+		backgroundColor: 'green'
+	}
 });
-
-
-
-/*
-
-*/
