@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
-import {Badge, Button} from 'react-native-elements';
+import {Badge, Button, List, ListItem} from 'react-native-elements';
 
 import {Contacts, Permissions} from 'expo';
 
@@ -11,7 +11,7 @@ export default class HomePage extends React.Component {
   }
 
   state = { 
-    selectedContacts: [],
+    selectedContacts: new Map(),
   }
 
   componentDidMount() {
@@ -49,10 +49,9 @@ export default class HomePage extends React.Component {
         <View style={styles.badge}>         
           <Badge>
             <Text style={{ color: 'orange' }}> 
-              {this.state.selectedContacts.length} {(this.state.selectedContacts.length === 1) ? 'elf' : 'elfs'} 
+              {this.state.selectedContacts.size} {(this.state.selectedContacts.size === 1) ? 'elf' : 'elfs'} 
             </Text>
           </Badge>
-
         </View>
 
         <View style={styles.drawButton}>

@@ -33,6 +33,7 @@ export default class DrawPage extends React.Component {
 				/>
 
 				<Button
+					// does this cause memory leak? also, is it bad animation?
 					onPress={() => this.props.navigation.dispatch(
 							NavigationActions.reset({
 								index: 0,

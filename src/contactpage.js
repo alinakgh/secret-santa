@@ -1,21 +1,26 @@
 import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, List, ListItem, SearchBar} from 'react-native-elements';
 import MaterialInitials from 'react-native-material-initials/native';
-
 import CheckBox from 'react-native-checkbox-heaven';
+import Modal from 'react-native-modal';
+
+import PhoneNumberModal from './components/phoneNumberModal';
 	
 import getAddressBook from './santaBook';
 
 export default class ProperContactsPage extends React.Component {
 	static navigationOptions = {
-    title: 'Contacts'
+    title: 'Contacts',
   }
 
 	state = {
 		contacts : [],
 		availableContacts: [],
-		selectedContacts: []
+		selectedContacts: new Map(),
+		isModalVisible: false,
+		contactSelectedForModal: null
+		
 	}
 
 	async componentDidMount() {
@@ -26,6 +31,7 @@ export default class ProperContactsPage extends React.Component {
 		});
 	}
 
+	// searchBar
 	onChangeText = searchWords => {
 		word = searchWords.toLowerCase();
 
@@ -36,10 +42,12 @@ export default class ProperContactsPage extends React.Component {
 		this.setState({availableContacts: availableContacts});
 	}
 
+	// searchBar - what do i need this for
 	onClearText = word => {
 		console.log("Clear", word);
 	}
 
+	// initials Icon
 	getInitialIcon = name => {
 		return (
 			<MaterialInitials
@@ -54,40 +62,66 @@ export default class ProperContactsPage extends React.Component {
 		);
 	}
 
-	isSelected = (contact) => {
-		return this.state.selectedContacts.includes(contact);
+	// modal
+	_openModal = () => {
+		this.setState({ isModalVisible: true})
 	}
 
-	onPressContact = (contact) => {		
-		if(!this.isSelected(contact)) {
-			this.setState({selectedContacts: [...this.state.selectedContacts, contact]});
+	_closeModal = () => {
+		this.setState({isModalVisible: false});
+	}
+
+
+	// item selection
+	isSelected = (contact) => {
+		return this.state.selectedContacts.has(contact.id); 
+	}
+
+	_addToSelected(contact, preferedNumber) {
+		item = {
+			contact: contact,
+			preferedNumber: preferedNumber
+		};
+
+		console.log("will add to a list on ", this.state.selectedContacts.size);
+
+		this.state.selectedContacts.set(contact.id, item)
+		this.setState({selectedContacts: this.state.selectedContacts});
+	}
+
+	// item selection - make this cleaner
+	onPressContact = (contact, isSelected) => {		
+		if(!isSelected) {
+			// open modal
+			if(contact.phoneNumbers.length > 1) {
+				this.setState({contactSelectedForModal : contact});
+				this._openModal();
+
+			} else {
+				this._addToSelected(contact, null);
+			}
 
 		} else {
-  		index = this.state.selectedContacts.indexOf(contact);
-			copy = this.state.selectedContacts.slice();
-		  copy.splice(index, 1);
-			this.setState({selectedContacts: copy});
-
-		}
-		
+		 	this.state.selectedContacts.delete(contact.id);
+			this.setState({selectedContacts: this.state.selectedContacts});
+		}		
 	}
 
+	// item selection (checkbox)
 	getCheckedIcon = (contact) => {
 		return (
 			<CheckBox
-		    onChange={(val) => {
-		    	if(val) {
-						this.setState({selectedContacts: [...this.state.selectedContacts, contact]});
-		    	} else {
-		    		index = this.state.selectedContacts.indexOf(contact);
-		    		copy = this.state.selectedContacts.slice();
-		    		copy.splice(index, 1);
-						this.setState({selectedContacts: copy});
-		    	}
-		    }} 
-		    checked={this.state.selectedContacts.includes(contact)}	
+				// better name for val
+		    onChange={(val) => this.onPressContact(contact, !val)} 
+		    checked={this.state.selectedContacts.has(contact.id)}	
 			/>
 		);
+	}
+
+	// callback for modal
+	_onSelectPhoneNumber = (contact, selectedPhoneNumber) => {
+		this._addToSelected(contact, selectedPhoneNumber);
+		this._closeModal();
 	}
 
 	render() {
@@ -117,10 +151,9 @@ export default class ProperContactsPage extends React.Component {
 								<ListItem
 									key={i}
 									title={'  ' + l.name}
-									//hideChevron
 									leftIcon={this.getInitialIcon(l.name)}
 									rightIcon={this.getCheckedIcon(l)}
-									onPress={() => this.onPressContact(l)}
+									onPress={() => this.onPressContact(l, this.isSelected(l))}
 								/>
 							))
 						}
@@ -129,7 +162,7 @@ export default class ProperContactsPage extends React.Component {
 
 				<View style={styles.buttonView}>
 					<Button
-					  // large
+					  large
 						onPress={() => {
             			this.props.navigation.goBack();
             			this.props.navigation.state.params.onSelect(this.state.selectedContacts);
@@ -139,6 +172,13 @@ export default class ProperContactsPage extends React.Component {
 						title='Save changes'
 					/>
 				</View>
+
+				<PhoneNumberModal 
+					isModalVisible={this.state.isModalVisible}
+					contactSelectedForModal={this.state.contactSelectedForModal}
+					onSelectPhoneNumber={this._onSelectPhoneNumber}
+					onDismiss={this._closeModal}
+				/>
 			</View>
 		);
 	}
@@ -156,7 +196,7 @@ const styles = StyleSheet.create({
 
 	list: {
 		flex: 1,
-		backgroundColor: 'red'
+		backgroundColor: 'brown'
 	},
 
 	buttonView: {
@@ -165,5 +205,19 @@ const styles = StyleSheet.create({
 
 	searchView: {
 		backgroundColor: 'green'
-	}
+	},
+
+	modalContent: {
+    backgroundColor: 'white',
+    padding: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 4,
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+  },
+
+	bottomModal: {
+    justifyContent: 'flex-end',
+    margin: 0,
+  },
 });
