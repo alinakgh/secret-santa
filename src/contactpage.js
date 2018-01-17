@@ -80,7 +80,10 @@ export default class ProperContactsPage extends React.Component {
 	_addToSelected(contact, preferedNumber) {
 		item = {
 			contact: contact,
-			preferedNumber: preferedNumber
+			preferedNumber: preferedNumber === null ? 
+												contact.phoneNumbers[0] : 
+												preferedNumber,
+			alias: contact.firstName
 		};
 
 		console.log("will add to a list on ", this.state.selectedContacts.size);
@@ -207,17 +210,4 @@ const styles = StyleSheet.create({
 		backgroundColor: 'green'
 	},
 
-	modalContent: {
-    backgroundColor: 'white',
-    padding: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 4,
-    borderColor: 'rgba(0, 0, 0, 0.1)',
-  },
-
-	bottomModal: {
-    justifyContent: 'flex-end',
-    margin: 0,
-  },
 });

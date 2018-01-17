@@ -18,8 +18,19 @@ export default class HomePage extends React.Component {
 
   }
 
-  onSelect = selectedContacts => {
+  // for contactsPage callback
+  _onSelect = selectedContacts => {
     this.setState({selectedContacts : selectedContacts});
+  };
+
+  _onAliasChange = (contact) => {
+    // contct has the new info
+    if(!this.state.selectedContacts.has(contact.id)){
+      console.log("THIS SHOULDNT HAPPEN");
+    } else {
+      this.state.selectedContacts.set(contact.id, contact);
+      this.setState({selectedContacts : selectedContacts});
+    }
   };
 
   render() { 
@@ -38,8 +49,8 @@ export default class HomePage extends React.Component {
            <Button 
             containerViewStyle={{width: '100%', marginLeft: 0}}
             onPress={() => this.props.navigation.navigate('ContactsPage', {
-                              selectedContacts : this.state.selectedContacts,
-                              onSelect: this.onSelect
+                              selectedContacts: this.state.selectedContacts,
+                              onSelect: this._onSelect
                            })} 
             title="Import contacts"
           />
@@ -60,8 +71,11 @@ export default class HomePage extends React.Component {
             large
             containerViewStyle={{width: '100%', marginLeft: 0}}
             iconRight = {{name: 'refresh'}}
-            onPress={() => this.props.navigation.navigate('ExclusionsPage')} 
-            title="Draw"
+            onPress={() => this.props.navigation.navigate('ExclusionsPage', {
+                            selectedContacts: this.state.selectedContacts,
+                            onAliasChange: this._onAliasChange
+                           })} 
+            title="Next"
           />
         </View>
       </View>
