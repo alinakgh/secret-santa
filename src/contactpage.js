@@ -1,8 +1,8 @@
 import React from 'react';
 import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, List, ListItem, SearchBar} from 'react-native-elements';
-import MaterialInitials from 'react-native-material-initials/native';
-import CheckBox from 'react-native-checkbox-heaven';
+//import MaterialInitials from 'react-native-material-initials/native';
+
 import Modal from 'react-native-modal';
 
 import PhoneNumberModal from './components/phoneNumberModal';

@@ -2,7 +2,7 @@ import React from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, List, ListItem} from 'react-native-elements';
 
-import CheckBox from 'react-native-checkbox-heaven';
+//import CheckBox from 'react-native-checkbox-heaven';
 import Modal from 'react-native-modal';
 
 

@@ -1,13 +1,16 @@
 import React from 'react';
 import {Alert, Image, StyleSheet, Text, View} from 'react-native';
-import {Badge, Button, List, ListItem} from 'react-native-elements';
+import {Badge, Button, Icon, List, ListItem} from 'react-native-elements';
 
 import {Contacts, Permissions} from 'expo';
 
 export default class HomePage extends React.Component {
 
+  // stackNavigation options
   static navigationOptions = {
     //title: 'Secret Santa' //sets the title and back arrow with the appropriate text
+    headerLeft: (<Icon name="menu"  type='entypo'
+                       onPress={() => this.props.navigation.navigate('MenuPage')}/>)
   }
 
   state = { 
