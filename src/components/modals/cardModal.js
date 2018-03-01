@@ -20,9 +20,9 @@ const currencies = [
 ]
 
 const picturesArr = [
-	{label: 'Christmas theme'},
-	{label: 'Party theme'},
-	{label: 'Custom'},
+	{id: 0, label: 'Christmas theme'},
+	{id: 1, label: 'Party theme'},
+	{id: 2, label: 'Custom'},
 ];
 
 export default class CardModal extends React.Component {
@@ -120,7 +120,7 @@ export default class CardModal extends React.Component {
 				onPressIn={() => this._addToBudget(addingAmount)} 
 				onPressOut={() => this._stopTimer()}>
 
-				<Icon name={iconName} type='entypo' size='35'/>
+				<Icon name={iconName} type='entypo' size={35}/>
 
 			</TouchableOpacity>
 		);
@@ -163,7 +163,7 @@ export default class CardModal extends React.Component {
 
 		  				{
 		  					currencies.map((currency, i) => (
-		  						<Picker.Item label={getFullLabel(currency)} value={currency.abv} />
+		  						<Picker.Item key={currency.abv} label={getFullLabel(currency)} value={currency.abv} />
 		  					))
 		  				}
 
@@ -218,7 +218,7 @@ export default class CardModal extends React.Component {
 	  			<View>
 						{
 							picturesArr.map((pic, i) => (
-								<Card containerStyle={{marginLeft: 0, marginRight: 0}}>
+								<Card containerStyle={{marginLeft: 0, marginRight: 0}} key={pic.id}>
 									<TouchableOpacity onPress={() => this._setPictureOption(i)}
 										style={{flexDirection: 'row', justifyContent: 'space-between', alignItems:'center'}}> 
 										<Text> {pic.label} </Text>

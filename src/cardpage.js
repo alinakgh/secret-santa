@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {NavigationActions} from 'react-navigation';
 
 import CardView from './components/cardView';
 
@@ -25,7 +26,8 @@ export default class CardPage extends React.Component {
 			<CardView card={this.props.navigation.state.params.card} 
 								onEditCard={this.props.navigation.state.params.onEditCard} 
 								navigateTo={(pageName, props) => 
-															this.props.navigation.navigate(pageName, props)}/>
+															this.props.navigation.navigate(pageName, props)}
+								goBack={() => this.props.navigation.dispatch(NavigationActions.back())}/>
 		);
 	}
 }

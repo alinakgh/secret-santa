@@ -4,6 +4,8 @@ import {Button, Icon, List, ListItem} from  'react-native-elements';
 
 import IconsView from './iconsView';
 import CardModal from './modals/cardModal';
+import RulesModal from './modals/rulesModal';
+import Swipeout from 'react-native-swipeout';
 
 export default class CardView extends React.Component {
 	state = {
@@ -29,8 +31,29 @@ export default class CardView extends React.Component {
 		}
 
 		this.setState({cardSaved: card});
-		this.props.onEditCard(card, this.state.cardSaved);
+		this.props.onEditCard(card);
 		this._closeModal();
+	}
+
+	_updateCardWithContacts = (contacts) => {
+		this.setState({cardSaved: {
+			...this.state.cardSaved,
+			participants: contacts,
+			participantsNo: contacts.length
+		}});
+	}
+
+	async _removeParticipant(participant) {
+		copy = [];
+		for(let i in this.state.cardSaved.participants) {
+			if(this.state.cardSaved.participants[i].id != participant.id){
+				copy.push(this.state.cardSaved.participants[i]);
+			}
+		}
+		
+		await this._updateCardWithContacts(copy);
+
+		this.props.onEditCard(this.state.cardSaved);
 	}
 
 	_closeModal = () => {
@@ -39,6 +62,32 @@ export default class CardView extends React.Component {
 
 	_openModal = () => {
 		this.setState({isEditModalVisible: true});
+	}
+
+	_updateCard = (newCard) => {
+		this.setState({cardSaved: newCard}); 
+	}
+
+	swipeoutBtns = (participant) => {
+		return (
+			[
+				{	
+					text: 'Delete',
+					onPress : () => this._removeParticipant(participant),
+					backgroundColor: 'red'
+				}
+			]
+		);
+	}
+
+	_onSaveRules = (rules) => {
+
+		this.setState({cardSaved: {
+			...this.state.cardSaved,
+			rules: rules
+		}})
+
+		// propageate info with onEditCard()
 	}
 
 	render() {
@@ -60,11 +109,14 @@ export default class CardView extends React.Component {
 						<List style={styles.contactList} containerStyle={{marginTop: 0}}>
 							{
 	    					this.state.cardSaved.participants.map((participant, i) => (
-		      				<ListItem
-						        key={i}
-						        title={participant}
-						        //leftIcon={{name: item.icon}}
-		      				/>
+			    				<Swipeout key={participant.id} right={this.swipeoutBtns(participant)}>
+			      				<ListItem
+							        key={participant.id}
+							        title={participant.name}
+							        //leftIcon={{name: item.icon}}
+							        hideChevron
+			      				/>
+		      				</Swipeout>
 	    					))
 	  					}
 							
@@ -73,7 +125,10 @@ export default class CardView extends React.Component {
 						<List containerStyle={{marginTop: 3}}>
 							<TouchableOpacity activeOpacity={0.5}
 																onPress={() => this.props.navigateTo('ContactsPage', {
-																	card: this.state.cardSaved
+																	card: this.state.cardSaved,
+																	onEditCard: this.props.onEditCard,
+																	goBack: this.props.goBack,
+																	updateCard: this._updateCard
 																})}>
 								<Icon name='plus' type='entypo' size={41} />
 							</TouchableOpacity>
@@ -97,6 +152,7 @@ export default class CardView extends React.Component {
 							onSaveChanges={(editedCard) => this._onSaveChanges(editedCard)}
 							buttonText="Save changes"/> 
 				</View>
+
 
 			</View>
 		);

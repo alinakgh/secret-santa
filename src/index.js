@@ -1,15 +1,10 @@
 import React from 'react';
 import {Text, View} from 'react-native';
-import { StackNavigator } from 'react-navigation';
+import {StackNavigator} from 'react-navigation';
 
 import MenuPage from './menupage';
 import CardPage from './cardpage';
-
-
-import HomePage from './homepage';
 import ContactsPage from './contactspage';
-import ExclusionsPage from './exclusionspage';
-import DrawPage from './drawpage';
 
 export default class AppRoot extends React.Component {
 	render() {
@@ -31,19 +26,4 @@ const RoutingStack = StackNavigator({
 	ContactsPage : {
 		screen: ContactsPage
 	},
-
-	HomePage : {
-		screen: HomePage,
-		title: 'Welcome to Secret Santa!',
-	},
-
-	ContactsPage : {
-		screen: ContactsPage
-	},
-	ExclusionsPage: {
-		screen: ExclusionsPage
-	},
-	DrawPage : {
-		screen: DrawPage
-	}
 });

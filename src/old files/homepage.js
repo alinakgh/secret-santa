@@ -9,8 +9,8 @@ export default class HomePage extends React.Component {
   // stackNavigation options
   static navigationOptions = {
     //title: 'Secret Santa' //sets the title and back arrow with the appropriate text
-    headerLeft: (<Icon name="menu"  type='entypo'
-                       onPress={() => this.props.navigation.navigate('MenuPage')}/>)
+    //headerLeft: (<Icon name="menu"  type='entypo'
+    //                   onPress={() => this.props.navigation.navigate('MenuPage')}/>)
   }
 
   state = { 

@@ -24,7 +24,7 @@ export default class AllCardsView extends React.Component {
 
 	_addCard = (newCard) => {
 		card = {
-			uid: 3,
+			uid: null,
 			title: newCard.title,
 			pictureOption: newCard.pictureOption,
 			image: '../images/raindeer.jpg',

@@ -32,6 +32,7 @@ export async function getAddressBook() {
       pageOffset: 0 * 100,
     });
 
+    console.log("before sort");
     santasAddressBook = contactResponse.data.sort(sortingFunction);
 
     console.log(`Fetched ${santasAddressBook.length} contacts.`);

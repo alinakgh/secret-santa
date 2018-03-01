@@ -1,8 +1,8 @@
 import React from 'react';
 
 import AllCardsView from './components/allCardsView';
-const demo = new Map();
-demo.set(1, {
+const demo = [
+{
 	uid: 1, //should be unique
 	title: 'Hustlers Secret Santa',
 	pictureOption: 0,
@@ -10,11 +10,10 @@ demo.set(1, {
 	budget: 10,
 	currency: "GBP",
 	date: '11 Dec 2018',
-	participants: ['asad', 'adssd','Alina', 'Tom', 'IVan', 'Rooz', 'Dani', 'Alina', 'Tom', 'IVan', 'Rooz', 'Dani'],
-	participantsNo: 12
-});
-
-demo.set(2, {
+	participants: [],
+	participantsNo: 0
+},
+{
 	uid: 2,
 	title: "Fam",
 	pictureOption: 0,
@@ -22,9 +21,13 @@ demo.set(2, {
 	budget: 50,
 	currency: "GBP",
 	date: '01 Feb 2018',
-	participants: [ 'Alina', 'Tom', 'IVan', 'Rooz', 'Dani'],
-	participantsNo: 5
-});
+	participants: [],
+	participantsNo: 0
+}];
+
+const getNextUid = (current) => {
+	return current + 1;
+}
 
 export default class MenuPage extends React.Component {
 	state = {
@@ -32,47 +35,39 @@ export default class MenuPage extends React.Component {
 		nextUid: 3,
 	}
 
-	_getNextUid = () => {
-		uid = this.state.nextUid;
-		next = this.state.nextUid + 1;
-		this.setState({nextUid: next});
-		return uid;
-	}
-
-	_getAllCardValues = () => {
-		var arr = new Array();
-		iter = this.state.data.values();
-
-		while((v = iter.next().value) !== undefined) {
-			arr.push(v);
-		}
-		return arr;
-	}
-
 	_onPressCard = (card) => {
 		this.props.navigation.navigate('CardPage', {
 				card: card, 
-				onEditCard: (editedCard, existingCard) => this._editCard(editedCard, existingCard)
+				onEditCard: (editedCard) => this._editCard(editedCard)
 		})
 	}
 
 	_addNewCard = (card) => {
-		nextUid =	this._getNextUid();
-		card.uid = nextUid;
-		this.state.data.set(nextUid, card);
-		this.setState({data: this.state.data});
+		card.uid = this.state.nextUid;
+		this.setState({nextUid: getNextUid(this.state.nextUid)});
+
+		copy = [...this.state.data, card];
+
+		this.setState({data: copy});
 	}
 
-	_editCard = (editedCard, existingCard) => {
-		// probably the same uid
-		this.state.data.set(existingCard.uid, editedCard);
-		this.setState({data: this.state.data});
+	_editCard = (editedCard) => {
+		copy = [...this.state.data];
+
+		for(let i in copy){
+			if(copy[i].uid === editedCard.uid){
+				copy[i] = editedCard;
+				break;
+			} 
+		}
+
+		this.setState({data: copy});
 	}
 
 	render() {
 		return (
 			<AllCardsView 
-				drawCards={this._getAllCardValues()} 
+				drawCards={this.state.data} 
 				navigationFunc={this._onPressCard}
 				addNewCard={this._addNewCard}/>
 		);
