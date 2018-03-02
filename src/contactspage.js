@@ -17,8 +17,8 @@ export default class ContactsPage extends React.Component {
 	// flatlist and virtualisedlist faff for better performance
 
 	async componentDidMount() {
-		alreadySelectedIds = this.props.navigation.state.params.card.participants.map((card) => {return card.id});
-		initialAddressBook = [... await getAddressBook()];
+		const alreadySelectedIds = this.props.navigation.state.params.card.participants.map((card) => {return card.id});
+		let initialAddressBook = [... await getAddressBook()];
 
 		for(let i in initialAddressBook) {
 			if(alreadySelectedIds.includes(initialAddressBook[i].id)) {
@@ -33,15 +33,13 @@ export default class ContactsPage extends React.Component {
 		this.setState({addressBook: initialAddressBook});
 	}
 
-
-
 	_toggleIsManualContactOn = () => {
-		b = !this.state.isManualContactOn;
+		const b = !this.state.isManualContactOn;
 		this.setState({isManualContactOn: b});
 	}
 
 	_toggleCheckBox = (contact) => {
-		copy = this.state.addressBook.slice();
+		let copy = this.state.addressBook.slice();
 		
 		copy[copy.indexOf(contact)] = {
 			...contact,
@@ -51,10 +49,8 @@ export default class ContactsPage extends React.Component {
 		this.setState({addressBook: copy});
 	}
 
-
   _updateCard = () => {
-  	participants = this.state.addressBook
-  										 .filter(contact => contact.isSelected);
+  	let participants = this.state.addressBook.filter(contact => contact.isSelected);
 
 		this.setState({currentCard: {
 			...this.state.currentCard,
@@ -115,15 +111,11 @@ export default class ContactsPage extends React.Component {
 						</TouchableOpacity>
 						<Collapsible collapsed={this.state.isManualContactOn}>
 
-							<ScrollView style={{ }} contentContainerStyle={{paddingBottom: 40}}> 
-								<List> 
-									<FlatList
-										renderItem={this._renderItem}
-										data={this.state.addressBook}
-										keyExtractor={this._keyExtractor}
-			  					/>
-								</List>
-							</ScrollView>
+							<FlatList
+								renderItem={this._renderItem}
+								data={this.state.addressBook}
+								keyExtractor={this._keyExtractor}
+	  					/>
 
 						</Collapsible>
 					</Card>
