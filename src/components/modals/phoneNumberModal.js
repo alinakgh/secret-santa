@@ -12,6 +12,8 @@ export default class PhoneNumberModal extends React.Component {
 			);
 		}
 
+		console.log("do i see this?");
+
 		return (
 			<View style={{flex:1}}>
 	      <Modal 
@@ -19,29 +21,14 @@ export default class PhoneNumberModal extends React.Component {
 	      	isVisible={this.props.isVisible}
 	      	onBackdropPress={this.props.onDismiss()}
 	      	supportedOrientations={['portrait', 'landscape']}
-	      	//backdropColor='red'
+	      	backdropColor='red'
 	      	animationInTiming={200}
 	      	animationOutTiming={200}> 
 
 	      	<Card>
 		      	<Text> lsfjanskjnds </Text>
 
-		      	<ScrollView style={{paddingBottom: 200}}> 
-							<List> 
-								{
-									/*
-		    					this.props.contact.phoneNumbers.map((phoneNumber, i) => (
-				      				<ListItem
-								        key={phoneNumber.id}
-								        title={phoneNumber.number}
-								        //leftIcon={this._getInitial(contact.name)}
-								        //hideChevron
-				      				/>
-		    					))
-		    					*/
-				  			}
-							</List>
-						</ScrollView>
+		      	
 	      	</Card>
 
 	      </Modal>

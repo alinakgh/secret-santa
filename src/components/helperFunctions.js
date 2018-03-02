@@ -34,6 +34,12 @@ export async function getAddressBook() {
 
     console.log("before sort");
     santasAddressBook = contactResponse.data.sort(sortingFunction);
+    santasAddressBook = santasAddressBook.map((contact) => {
+    	newContact = contact;
+    	newContact.isSelected = false;
+
+    	return newContact;
+    });
 
     console.log(`Fetched ${santasAddressBook.length} contacts.`);
   }
