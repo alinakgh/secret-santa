@@ -1,42 +1,61 @@
-import React from 'react';
-import {Text, View} from 'react-native';
-import {Card, CheckBox} from 'react-native-elements';
-import Modal from 'react-native-modal'
-
+import React from "react";
+import { Text, View } from "react-native";
+import { Button, Card, CheckBox } from "react-native-elements";
+import Modal from "react-native-modal";
 
 export default class RulesModal extends React.Component {
-	state = {
-		isPairsAllowed: false
-	}
+  state = {
+    card: null
+  };
 
-	componentDidMount() {
-		//this.setState({isPairsAllowed: this.props.rules.isPairsAllowed});
-	}
+  componentDidMount() {
+    this.setState({ card: this.props.card });
+    console.log("card on receive ", this.props.card);
+  }
 
-	render() {
-		return (
-			<Modal 
-	      	//style={styles.bottomModal}
-	      	isVisible={this.props.isVisible}
-	      	onBackdropPress={this.props.onDismiss()}
-	      	supportedOrientations={['portrait', 'landscape']}
-	      	//backdropColor='red'
-	      	animationInTiming={200}
-	      	animationOutTiming={200}> 
+  _onToggleCheckbox = () => {
+    var newCard = {
+      ...this.state.card,
+      rules: {
+        ...this.state.card.rules,
+        arePairsAllowed: !this.state.card.rules.arePairsAllowed
+      }
+    };
+    this.setState({ card: newCard });
 
-	     	<Card title="Rules of the draw">
-		     	<CheckBox 
-						title="Allow Pairs"
-						checked={this.state.isPairsAllowed}
-						containerStyle={{padding: 0, margin: 0}}
-						onPress={() => this.setState({isPairsAllowed: !this.state.isPairsAllowed})}
-					/>
-	     	
+    console.log("newCard ", newCard);
+  };
 
-	     	<Button title="Save" onPress={() => this.props.onSaveRules(this.state.isPairsAllowed)} />
-	     	</Card>
+  _onSaveChanges = () => {
+    this.props.onSaveChanges(this.state.card);
+  };
 
-	     </Modal>
-		);
-	}
+  render() {
+    if (
+      this.state.card === null ||
+      !this.props.isVisible ||
+      this.props.card === null
+    ) {
+      return <View />;
+    }
+    return (
+      <Modal
+        isVisible={this.props.isVisible}
+        onBackdropPress={this.props.onDismiss()}
+        supportedOrientations={["portrait", "landscape"]}
+        animationInTiming={200}
+        animationOutTiming={200}
+      >
+        <Card title="Rules of the draw">
+          <CheckBox
+            title="Allow Pairs"
+            checked={this.state.card.rules.arePairsAllowed}
+            containerStyle={{ padding: 0, margin: 0 }}
+            onPress={() => this._onToggleCheckbox()}
+          />
+        </Card>
+        <Button title="Save" onPress={() => this._onSaveChanges()} />
+      </Modal>
+    );
+  }
 }

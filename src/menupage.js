@@ -1,75 +1,79 @@
-import React from 'react';
+import React from "react";
+import { getParticipantObject } from "./components/helperFunctions";
 
-import AllCardsView from './components/allCardsView';
-const demo = [
-{
-	uid: 1, //should be unique
-	title: 'Hustlers Secret Santa',
-	pictureOption: 0,
-	image: '../images/raindeer.jpg',
-	budget: 10,
-	currency: "GBP",
-	date: '11 Dec 2018',
-	participants: [],
-	participantsNo: 0
-},
-{
-	uid: 2,
-	title: "Fam",
-	pictureOption: 0,
-	image: '../images/raindeer.jpg', //get a default picture
-	budget: 50,
-	currency: "GBP",
-	date: '01 Feb 2018',
-	participants: [],
-	participantsNo: 0
-}];
-
-const getNextUid = (current) => {
-	return current + 1;
-}
+import AllCardsView from "./components/allCardsView";
+import uuid from "react-native-uuid";
 
 export default class MenuPage extends React.Component {
-	state = {
-		data: demo,
-		nextUid: 3,
-	}
+  state = {
+    data: []
+  };
 
-	_onPressCard = (card) => {
-		this.props.navigation.navigate('CardPage', {
-				card: card, 
-				onEditCard: (editedCard) => this._editCard(editedCard)
-		})
-	}
+  componentDidMount() {
+    fetch("http://192.168.0.22:3000/users/3", {
+      method: "GET"
+    })
+      .then(response => response.json())
+      .then(data => {
+        this.setState({ data: data });
+      })
+      .catch(error => {
+        console.log("error", error);
+      });
+  }
 
-	_addNewCard = (card) => {
-		card.uid = this.state.nextUid;
-		this.setState({nextUid: getNextUid(this.state.nextUid)});
+  _onPressCard = card => {
+    this.props.navigation.navigate("CardPage", {
+      card: card,
+      onEditCard: editedCard => this._editCard(editedCard)
+    });
+  };
 
-		copy = [...this.state.data, card];
+  _sendData = data => {
+    fetch("http://192.168.0.22:3000/updateData/", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+  };
 
-		this.setState({data: copy});
-	}
+  async _addNewCard(card) {
+    var newCard = {
+      ...card,
+      uid: uuid.v4()
+    };
+    copy = [...this.state.data, newCard];
 
-	_editCard = (editedCard) => {
-		copy = [...this.state.data];
+    console.log("card ", copy);
 
-		for(let i in copy){
-			if(copy[i].uid === editedCard.uid){
-				copy[i] = editedCard;
-				break;
-			} 
-		}
+    this._sendData(copy);
+    this.setState({ data: copy });
+  }
 
-		this.setState({data: copy});
-	}
+  _editCard = editedCard => {
+    copy = [...this.state.data];
 
-	render() {
-		return (
-			<AllCardsView 
-				drawCards={this.state.data} 
-				navigationFunc={this._onPressCard}
-				addNewCard={this._addNewCard}/>
-		);
-	}
+    for (let i in copy) {
+      if (copy[i].uid === editedCard.uid) {
+        copy[i] = editedCard;
+        break;
+      }
+    }
+
+    this._sendData(copy);
+    this.setState({ data: copy });
+  };
+
+  render() {
+    return (
+      <AllCardsView
+        drawCards={this.state.data}
+        navigationFunc={this._onPressCard}
+        addNewCard={card => this._addNewCard(card)}
+      />
+    );
+  }
 }

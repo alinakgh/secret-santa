@@ -1,26 +1,25 @@
-import {Contacts, Permissions} from 'expo';
+import { Contacts, Permissions } from "expo";
 
 let santasAddressBook = null;
 
-
 export default async function getAddressBook() {
-	if(!santasAddressBook){
-		console.log('should only see this once');
+  if (!santasAddressBook) {
+    console.log("should only see this once");
 
-    // Ask for permission to query contacts 
+    // Ask for permission to query contacts
     const permission = await Permissions.askAsync(Permissions.CONTACTS);
-    if (permission.status !== 'granted') {
+    if (permission.status !== "granted") {
       // Permission was denied...
       return;
     }
-    
+
     const contactResponse = await Contacts.getContactsAsync({
       fields: [
-        Contacts.PHONE_NUMBERS,
+        Contacts.PHONE_NUMBERS
         // Contacts.EMAILS,
       ],
       pageSize: 500,
-      pageOffset: 0 * 100,
+      pageOffset: 0 * 100
     });
 
     santasAddressBook = contactResponse.data.sort(sortingFunction);
@@ -28,10 +27,10 @@ export default async function getAddressBook() {
     console.log(`Fetched ${santasAddressBook.length} contacts.`);
   }
 
-	return santasAddressBook;
+  return santasAddressBook;
 }
 
-function sortingFunction (a, b) {
+function sortingFunction(a, b) {
   var nameA = a.name.toUpperCase(); // ignore upper and lowercase
   var nameB = b.name.toUpperCase(); // ignore upper and lowercase
   if (nameA < nameB) {
@@ -43,63 +42,61 @@ function sortingFunction (a, b) {
 
   // names must be equal
   return 0;
-};
-  
-
+}
 
 /*
 
 // think about encapsulation of methods
 export default class SantasAddressBook {
-	constructor(props) {
-		if(!instance){
-			console.log('should only see this once');
-			instance = this;
+  constructor(props) {
+    if(!instance){
+      console.log('should only see this once');
+      instance = this;
 
-			this.state = {
-				phoneBook : [],
-				selectedContacts : [],
-				manualContacts : []
-			};
+      this.state = {
+        phoneBook : [],
+        selectedContacts : [],
+        manualContacts : []
+      };
 
-			this.getPhoneBook();
-		}
+      this.getPhoneBook();
+    }
 
-		return instance;
-	}
+    return instance;
+  }
 
-	// maybe think about types
-	getPhoneBook = async () => {
-		
-		if(this.state.phoneBook.length === 0) {
-	      console.log('SantaBook is empty, populating it...');
-	      await this.getContacts()
-	      	.then(() => console.log('Book length is', this.state.phoneBook.length));
-	  } 
+  // maybe think about types
+  getPhoneBook = async () => {
+    
+    if(this.state.phoneBook.length === 0) {
+        console.log('SantaBook is empty, populating it...');
+        await this.getContacts()
+          .then(() => console.log('Book length is', this.state.phoneBook.length));
+    } 
 
-	  return this.state.phoneBook;
+    return this.state.phoneBook;
   }
 
   getAllSelectedContacts = () => {
-  	return this.state.selectedContacts;
+    return this.state.selectedContacts;
   }
 
   addManualContact = (number, alias) => {
-  	newContact = {
-  		name : '',
-  		alias : alias,
-  		phoneNumber : number
-  	};
+    newContact = {
+      name : '',
+      alias : alias,
+      phoneNumber : number
+    };
 
-  	manualContacts.push(newContact);
+    manualContacts.push(newContact);
   }
 
   getSelectedContacts = async () => {
-  	return this.state.selectedContacts;
+    return this.state.selectedContacts;
   }
 
   setSelectedContacts = (selectedContacts) => {
-  	this.state.selectedContacts = selectedContacts;
+    this.state.selectedContacts = selectedContacts;
   }
 
   // HELPER METHODS
@@ -110,4 +107,3 @@ export default class SantasAddressBook {
 }
 
 */
-

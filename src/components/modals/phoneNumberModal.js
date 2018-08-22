@@ -1,39 +1,78 @@
-import React from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {Card, List, ListItem} from 'react-native-elements';
-import Modal from 'react-native-modal';
+import React from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { Button, Card, List, ListItem } from "react-native-elements";
+import Modal from "react-native-modal";
+import { getParticipantObject } from "../helperFunctions";
 
-export default class PhoneNumberModal extends React.Component {
+export default class PhoneNumberModal extends React.PureComponent {
+  _saveChanges = phoneNumber => {
+    const contact = this.props.contact;
+    var newContact = getParticipantObject(
+      contact.id,
+      contact.name,
+      "",
+      phoneNumber.number,
+      phoneNumber.id,
+      phoneNumber.label
+    );
 
-	render() {
-		if(!this.props.isVisible) {
-			return (
-				<View></View>
-			);
-		}
+    this.props.onSave(this.props.contact, newContact);
+    this.props.onDismiss();
+  };
 
-		console.log("do i see this?");
+  _getDescription = phoneNumber => {
+    const label = phoneNumber.label;
 
-		return (
-			<View style={{flex:1}}>
-	      <Modal 
-	      	//style={styles.bottomModal}
-	      	isVisible={this.props.isVisible}
-	      	onBackdropPress={this.props.onDismiss()}
-	      	supportedOrientations={['portrait', 'landscape']}
-	      	backdropColor='red'
-	      	animationInTiming={200}
-	      	animationOutTiming={200}> 
+    if (label !== null && label !== "") {
+      return phoneNumber.number + " (" + label + ")";
+    }
 
-	      	<Card>
-		      	<Text> lsfjanskjnds </Text>
+    return phoneNumber.number;
+  };
 
-		      	
-	      	</Card>
+  _renderModalBody = () => {
+    if (this.props.contact === null) {
+      return <View />;
+    }
 
-	      </Modal>
+    return (
+      <View>
+        <Card>
+          <Text> {this.props.contact.name} </Text>
+          <List>
+            {this.props.contact.phoneNumbers.map(phoneNumber => (
+              <TouchableOpacity
+                key={phoneNumber.id}
+                onPress={() => this._saveChanges(phoneNumber)}
+              >
+                <ListItem
+                  title={this._getDescription(phoneNumber)}
+                  hideChevron
+                />
+              </TouchableOpacity>
+            ))}
+          </List>
+        </Card>
+        <View>
+          <Button title="Cancel" onPress={this.props.onDismiss()} />
+        </View>
+      </View>
+    );
+  };
 
-	     </View>
-		);
-	}
+  render() {
+    return (
+      <Modal
+        //style={styles.bottomModal}
+        isVisible={this.props.isVisible}
+        onBackdropPress={this.props.onDismiss()}
+        supportedOrientations={["portrait", "landscape"]}
+        animationInTiming={400}
+        animationOutTiming={1000}
+        backdropTransitionOutTiming={400}
+      >
+        {this._renderModalBody()}
+      </Modal>
+    );
+  }
 }
